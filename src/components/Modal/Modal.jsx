@@ -24,19 +24,11 @@ export class Modal extends Component {
     }
   };
   render() {
+    const { showImage } = this.props;
     return createPortal(
       <div className="overlay" onClick={this.handleBackdropClick}>
         <div className="modal">
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officiis
-            incidunt, eveniet iste consequatur dolore mollitia laudantium quasi
-            hic quis sapiente, delectus corrupti sed dolorem itaque quas
-            distinctio saepe porro id!
-          </p>
-          <img src="" alt="" />
-          <button type="button" onClick={() => this.props.onClose()}>
-            Close
-          </button>
+          <img src={showImage.url} alt={showImage.alt} />
         </div>
       </div>,
       modalRoot
