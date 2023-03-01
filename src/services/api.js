@@ -4,8 +4,6 @@ const API_KEY = '32551916-52acd45cb85fdadfb1e78d261';
 const URL = `https://pixabay.com/api/`;
 const perPage = 12;
 
-// https://pixabay.com/api/?q=cat&page=1&key=your_key&image_type=photo&orientation=horizontal&per_page=12
-
 export const fetchImagesWithQuery = async (searchQuery, page = 1) => {
   const axiosParams = {
     key: API_KEY,

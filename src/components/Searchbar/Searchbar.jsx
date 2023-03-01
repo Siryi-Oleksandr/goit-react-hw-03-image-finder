@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { object, string } from 'yup';
 import { FcSearch } from 'react-icons/fc';
-import { BsSearch } from 'react-icons/bs';
-// FcSearch;
+import { toast } from 'react-toastify';
 
 export const Searchbar = ({ onSubmit }) => {
   const handleSubmit = (values, { resetForm }) => {
     const { search } = values;
-    onSubmit(search);
+    const handleSearch = search.toLowerCase().trim();
+    if (handleSearch === '') {
+      return toast.warn('Bad request!', {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    }
+    onSubmit(handleSearch);
     resetForm();
   };
 

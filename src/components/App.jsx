@@ -5,6 +5,8 @@ import API from '../services/api';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export class App extends Component {
   state = {
@@ -20,9 +22,9 @@ export class App extends Component {
     const { query, page } = this.state;
 
     if (prevState.query !== query) {
-      this.setState({ status: 'pending', page: 1 });
+      this.setState({ status: 'pending' });
       try {
-        const data = await API.fetchImagesWithQuery(query, page);
+        const data = await API.fetchImagesWithQuery(query, 1);
         const handleImages = API.handleFetchData(data.images);
         this.setState({
           images: handleImages,
@@ -34,7 +36,7 @@ export class App extends Component {
       }
     }
 
-    if (prevState.page !== page) {
+    if (prevState.page !== page && page !== 1) {
       this.setState({ status: 'pending' });
       try {
         const data = await API.fetchImagesWithQuery(query, page);
@@ -46,6 +48,7 @@ export class App extends Component {
         }));
       } catch (error) {
         this.setState({ error, status: 'rejected' });
+      } finally {
       }
     }
   }
@@ -61,14 +64,29 @@ export class App extends Component {
   };
 
   render() {
-    const { images, status, page, totalPages } = this.state;
+    const { query, images, status, page, totalPages } = this.state;
     const availablePages = totalPages > page;
+
     return (
       <div>
         <Searchbar onSubmit={this.handleSubmit} />
         {status === 'pending' && <Loader />}
-        <ImageGallery images={images} />
-        {availablePages && <Button onLoadMore={this.loadMore} />}
+        {status === 'resolved' && images.length > 0 && (
+          <ImageGallery images={images} />
+        )}
+        {status === 'resolved' &&
+          images.length === 0 &&
+          toast.info(`${query} not found!`, {
+            position: toast.POSITION.TOP_CENTER,
+          })}
+        {availablePages && status === 'resolved' && (
+          <Button onLoadMore={this.loadMore} />
+        )}
+        {status === 'rejected' &&
+          toast.error(`$Something went wrong`, {
+            position: toast.POSITION.TOP_CENTER,
+          })}
+        <ToastContainer />
       </div>
     );
   }
