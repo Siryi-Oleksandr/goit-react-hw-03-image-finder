@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
-import * as API from '../services/api';
+import { fetchImagesWithQuery, handleFetchData } from '../services/api';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
@@ -23,8 +23,8 @@ export class App extends Component {
     if (prevState.query !== query) {
       this.setState({ status: 'pending' });
       try {
-        const data = await API.fetchImagesWithQuery(query, 1);
-        const handleImages = API.handleFetchData(data.images);
+        const data = await fetchImagesWithQuery(query, 1);
+        const handleImages = handleFetchData(data.images);
         this.setState({
           images: handleImages,
           status: 'resolved',
@@ -38,8 +38,8 @@ export class App extends Component {
     if (prevState.page !== page && page !== 1) {
       this.setState({ status: 'pending' });
       try {
-        const data = await API.fetchImagesWithQuery(query, page);
-        const handleImages = API.handleFetchData(data.images);
+        const data = await fetchImagesWithQuery(query, page);
+        const handleImages = handleFetchData(data.images);
         this.setState(({ images }) => ({
           images: [...images, ...handleImages],
           status: 'resolved',
