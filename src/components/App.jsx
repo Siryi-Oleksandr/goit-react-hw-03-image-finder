@@ -81,7 +81,7 @@ export class App extends Component {
       <div>
         <Searchbar onSubmit={this.handleSubmit} />
         <ImageGallery images={images} onImageClick={this.getLargeImage} />
-        {showModal && (
+        {showModal && largeImage && (
           <Modal showImage={largeImage} onClose={this.toggleModal} />
         )}
         {status === 'resolved' && <Button onLoadMore={this.loadMore} />}
