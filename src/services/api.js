@@ -4,7 +4,7 @@ const API_KEY = '32551916-52acd45cb85fdadfb1e78d261';
 const URL = `https://pixabay.com/api/`;
 const perPage = 12;
 
-export const fetchImagesWithQuery = async (searchQuery, page = 1) => {
+const fetchImagesWithQuery = async (searchQuery, page = 1) => {
   const axiosParams = {
     key: API_KEY,
     q: searchQuery,
@@ -23,7 +23,7 @@ export const fetchImagesWithQuery = async (searchQuery, page = 1) => {
   return { images: response.data.hits, totalPages: availablePages };
 };
 
-export const handleFetchData = images => {
+const handleFetchData = images => {
   return images.map(({ id, tags, webformatURL, largeImageURL }) => {
     return { id, tags, webImgURL: webformatURL, lgImgURL: largeImageURL };
   });
