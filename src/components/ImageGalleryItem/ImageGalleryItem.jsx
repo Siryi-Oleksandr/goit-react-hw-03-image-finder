@@ -14,7 +14,7 @@ export class ImageGalleryItem extends Component {
   };
 
   render() {
-    const { id, tags, webImgURL } = this.props.image;
+    const { tags, webImgURL } = this.props.image;
     return (
       <>
         <img

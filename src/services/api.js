@@ -29,7 +29,4 @@ export const handleFetchData = images => {
   });
 };
 
-export default {
-  fetchImagesWithQuery,
-  handleFetchData,
-};
+export { fetchImagesWithQuery, handleFetchData };
