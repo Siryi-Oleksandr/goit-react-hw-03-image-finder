@@ -4,20 +4,17 @@ import { Searchbar } from './Searchbar/Searchbar';
 import API from '../services/api';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
+import { Loader } from './Loader/Loader';
 
 export class App extends Component {
   state = {
     query: '',
-    totalPage: null,
+    totalPages: 0,
     page: 1,
     images: [],
-    showModal: false,
     error: false,
     status: 'idle',
-    largeImage: null,
   };
-
-  componentDidMount() {}
 
   async componentDidUpdate(prevProps, prevState) {
     const { query, page } = this.state;
@@ -25,11 +22,12 @@ export class App extends Component {
     if (prevState.query !== query) {
       this.setState({ status: 'pending', page: 1 });
       try {
-        const images = await API.fetchImagesWithQuery(query, page);
-        const handleImages = API.handleFetchData(images);
+        const data = await API.fetchImagesWithQuery(query, page);
+        const handleImages = API.handleFetchData(data.images);
         this.setState({
           images: handleImages,
           status: 'resolved',
+          totalPages: data.totalPages,
         });
       } catch (error) {
         this.setState({ error, status: 'rejected' });
@@ -39,11 +37,12 @@ export class App extends Component {
     if (prevState.page !== page) {
       this.setState({ status: 'pending' });
       try {
-        const images = await API.fetchImagesWithQuery(query, page);
-        const handleImages = API.handleFetchData(images);
+        const data = await API.fetchImagesWithQuery(query, page);
+        const handleImages = API.handleFetchData(data.images);
         this.setState(({ images }) => ({
           images: [...images, ...handleImages],
           status: 'resolved',
+          totalPages: data.totalPages,
         }));
       } catch (error) {
         this.setState({ error, status: 'rejected' });
@@ -55,20 +54,6 @@ export class App extends Component {
     this.setState({ query });
   };
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
-  };
-
-  getLargeImage = id => {
-    const image = this.state.images.find(elem => elem.id === id);
-    this.setState({
-      largeImage: { url: image.lgImgURL, alt: image.tags },
-      showModal: true,
-    });
-  };
-
   loadMore = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
@@ -76,15 +61,14 @@ export class App extends Component {
   };
 
   render() {
-    const { showModal, images, largeImage, status } = this.state;
+    const { images, status, page, totalPages } = this.state;
+    const availablePages = totalPages > page;
     return (
       <div>
         <Searchbar onSubmit={this.handleSubmit} />
-        <ImageGallery images={images} onImageClick={this.getLargeImage} />
-        {showModal && largeImage && (
-          <Modal showImage={largeImage} onClose={this.toggleModal} />
-        )}
-        {status === 'resolved' && <Button onLoadMore={this.loadMore} />}
+        {status === 'pending' && <Loader />}
+        <ImageGallery images={images} />
+        {availablePages && <Button onLoadMore={this.loadMore} />}
       </div>
     );
   }

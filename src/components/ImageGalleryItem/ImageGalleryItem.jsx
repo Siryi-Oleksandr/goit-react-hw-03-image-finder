@@ -1,18 +1,35 @@
+import { Modal } from 'components/Modal/Modal';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
-export const ImageGalleryItem = ({ image, onImageClick }) => {
-  const { id, tags, webImgURL, lgImgURL } = image;
-  return (
-    <>
-      <img
-        className="imageGalleryItem-image"
-        src={webImgURL}
-        alt={tags}
-        onClick={() => onImageClick(id)}
-      />
-    </>
-  );
-};
+export class ImageGalleryItem extends Component {
+  state = {
+    showModal: false,
+  };
+
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+    }));
+  };
+
+  render() {
+    const { id, tags, webImgURL } = this.props.image;
+    return (
+      <>
+        <img
+          className="imageGalleryItem-image"
+          src={webImgURL}
+          alt={tags}
+          onClick={() => this.setState({ showModal: true })}
+        />
+        {this.state.showModal && (
+          <Modal showImage={this.props.image} onClose={this.toggleModal} />
+        )}
+      </>
+    );
+  }
+}
 
 ImageGalleryItem.propTypes = {
   image: PropTypes.shape({
@@ -21,5 +38,4 @@ ImageGalleryItem.propTypes = {
     lgImgURL: PropTypes.string,
     tags: PropTypes.string,
   }).isRequired,
-  onImageClick: PropTypes.func.isRequired,
 };
