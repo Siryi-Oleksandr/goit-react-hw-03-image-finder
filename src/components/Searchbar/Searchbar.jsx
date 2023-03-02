@@ -9,9 +9,7 @@ export const Searchbar = ({ onSubmit }) => {
     const { search } = values;
     const handleSearch = search.toLowerCase().trim();
     if (handleSearch === '') {
-      return toast.warn('Bad request!', {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      return toast.warn('Bad request!');
     }
     onSubmit(handleSearch);
     resetForm();

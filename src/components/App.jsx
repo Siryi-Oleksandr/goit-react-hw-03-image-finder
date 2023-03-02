@@ -6,6 +6,7 @@ import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Error } from './Error/Error';
 
 export class App extends PureComponent {
   state = {
@@ -27,9 +28,7 @@ export class App extends PureComponent {
 
         // when bad request
         if (data.images.length === 0) {
-          toast.info(`"${query}" not found!`, {
-            position: toast.POSITION.TOP_CENTER,
-          });
+          toast.info(`"${query}" not found!`);
 
           return this.setState({
             images: [],
@@ -46,9 +45,7 @@ export class App extends PureComponent {
         });
       } catch (error) {
         this.setState({ error, status: 'rejected' });
-        toast.error(`$Something went wrong`, {
-          position: toast.POSITION.TOP_CENTER,
-        });
+        toast.error(`$Something went wrong`);
       }
     }
 
@@ -64,9 +61,7 @@ export class App extends PureComponent {
         }));
       } catch (error) {
         this.setState({ error, status: 'rejected' });
-        toast.error(`$Something went wrong`, {
-          position: toast.POSITION.TOP_CENTER,
-        });
+        toast.error(`$Something went wrong`);
       }
     }
   }
@@ -82,7 +77,7 @@ export class App extends PureComponent {
   };
 
   render() {
-    const { images, status, page, totalPages } = this.state;
+    const { images, status, page, totalPages, error } = this.state;
     const availablePages = totalPages > page;
 
     return (
@@ -91,7 +86,8 @@ export class App extends PureComponent {
         {status === 'pending' && <Loader />}
         {images.length > 0 && <ImageGallery images={images} />}
         {availablePages && <Button onLoadMore={this.loadMore} />}
-        <ToastContainer />
+        {status === 'rejected' && <Error error={error.message} />}
+        <ToastContainer position="top-right" autoClose={2500} />
       </div>
     );
   }
