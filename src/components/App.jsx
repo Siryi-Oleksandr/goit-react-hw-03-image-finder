@@ -24,7 +24,7 @@ export class App extends PureComponent {
       this.setState({ status: 'pending', page: 1 });
       try {
         const data = await fetchImagesWithQuery(query, 1);
-        console.log('data', data);
+
         // when bad request
         if (data.images.length === 0) {
           return this.setState({
