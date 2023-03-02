@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import { fetchImagesWithQuery, handleFetchData } from '../services/api';
 import { ImageGallery } from './ImageGallery/ImageGallery';
@@ -7,7 +7,7 @@ import { Loader } from './Loader/Loader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export class App extends Component {
+export class App extends PureComponent {
   state = {
     query: '',
     totalPages: 0,
@@ -21,9 +21,19 @@ export class App extends Component {
     const { query, page } = this.state;
 
     if (prevState.query !== query) {
-      this.setState({ status: 'pending' });
+      this.setState({ status: 'pending', page: 1 });
       try {
         const data = await fetchImagesWithQuery(query, 1);
+        console.log('data', data);
+        // when bad request
+        if (data.images.length === 0) {
+          return this.setState({
+            images: [],
+            status: 'not found',
+            totalPages: 0,
+          });
+        }
+
         const handleImages = handleFetchData(data.images);
         this.setState({
           images: handleImages,
@@ -73,8 +83,8 @@ export class App extends Component {
         {status === 'resolved' && images.length > 0 && (
           <ImageGallery images={images} />
         )}
-        {status === 'resolved' &&
-          images.length === 0 &&
+
+        {status === 'not found' &&
           toast.info(`${query} not found!`, {
             position: toast.POSITION.TOP_CENTER,
           })}
