@@ -17,7 +17,7 @@ export class App extends PureComponent {
     status: 'idle',
   };
 
-  async componentDidUpdate(prevProps, prevState) {
+  async componentDidUpdate(_, prevState) {
     const { query, page } = this.state;
 
     if (prevState.query !== query) {
@@ -27,6 +27,10 @@ export class App extends PureComponent {
 
         // when bad request
         if (data.images.length === 0) {
+          toast.info(`"${query}" not found!`, {
+            position: toast.POSITION.TOP_CENTER,
+          });
+
           return this.setState({
             images: [],
             status: 'not found',
@@ -42,6 +46,9 @@ export class App extends PureComponent {
         });
       } catch (error) {
         this.setState({ error, status: 'rejected' });
+        toast.error(`$Something went wrong`, {
+          position: toast.POSITION.TOP_CENTER,
+        });
       }
     }
 
@@ -57,7 +64,9 @@ export class App extends PureComponent {
         }));
       } catch (error) {
         this.setState({ error, status: 'rejected' });
-      } finally {
+        toast.error(`$Something went wrong`, {
+          position: toast.POSITION.TOP_CENTER,
+        });
       }
     }
   }
@@ -73,28 +82,15 @@ export class App extends PureComponent {
   };
 
   render() {
-    const { query, images, status, page, totalPages } = this.state;
+    const { images, status, page, totalPages } = this.state;
     const availablePages = totalPages > page;
 
     return (
       <div>
         <Searchbar onSubmit={this.handleSubmit} />
         {status === 'pending' && <Loader />}
-        {status === 'resolved' && images.length > 0 && (
-          <ImageGallery images={images} />
-        )}
-
-        {status === 'not found' &&
-          toast.info(`${query} not found!`, {
-            position: toast.POSITION.TOP_CENTER,
-          })}
-        {availablePages && status === 'resolved' && (
-          <Button onLoadMore={this.loadMore} />
-        )}
-        {status === 'rejected' &&
-          toast.error(`$Something went wrong`, {
-            position: toast.POSITION.TOP_CENTER,
-          })}
+        {images.length > 0 && <ImageGallery images={images} />}
+        {availablePages && <Button onLoadMore={this.loadMore} />}
         <ToastContainer />
       </div>
     );
