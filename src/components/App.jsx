@@ -21,10 +21,10 @@ export class App extends PureComponent {
   async componentDidUpdate(_, prevState) {
     const { query, page } = this.state;
 
-    if (prevState.query !== query) {
-      this.setState({ status: 'pending', page: 1 });
+    if (prevState.query !== query || prevState.page !== page) {
+      this.setState({ status: 'pending' });
       try {
-        const data = await fetchImagesWithQuery(query, 1);
+        const data = await fetchImagesWithQuery(query, page);
 
         // when bad request
         if (data.images.length === 0) {
@@ -37,22 +37,6 @@ export class App extends PureComponent {
           });
         }
 
-        const handleImages = handleFetchData(data.images);
-        this.setState({
-          images: handleImages,
-          status: 'resolved',
-          totalPages: data.totalPages,
-        });
-      } catch (error) {
-        this.setState({ error, status: 'rejected' });
-        toast.error(`$Something went wrong`);
-      }
-    }
-
-    if (prevState.page !== page && page !== 1) {
-      this.setState({ status: 'pending' });
-      try {
-        const data = await fetchImagesWithQuery(query, page);
         const handleImages = handleFetchData(data.images);
         this.setState(({ images }) => ({
           images: [...images, ...handleImages],
@@ -67,7 +51,7 @@ export class App extends PureComponent {
   }
 
   handleSubmit = query => {
-    this.setState({ query });
+    this.setState({ query, page: 1, images: [] });
   };
 
   loadMore = () => {
